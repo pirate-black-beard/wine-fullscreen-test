@@ -984,10 +984,9 @@ static inline BOOL stage_manager_enabled(void)
             [[self standardWindowButton:NSWindowCloseButton] setEnabled:!self.disabled];
         if (style & NSWindowStyleMaskMiniaturizable)
             [[self standardWindowButton:NSWindowMiniaturizeButton] setEnabled:!self.disabled];
-        if (style & NSWindowStyleMaskResizable)
+        if ((style & NSWindowStyleMaskResizable) ||
+            ([self collectionBehavior] & NSWindowCollectionBehaviorFullScreenPrimary))
             [[self standardWindowButton:NSWindowZoomButton] setEnabled:!self.disabled];
-        if ([self collectionBehavior] & NSWindowCollectionBehaviorFullScreenPrimary)
-            [[self standardWindowButton:NSWindowFullScreenButton] setEnabled:!self.disabled];
 
         if ([self preventResizing])
         {
@@ -1010,7 +1009,8 @@ static inline BOOL stage_manager_enabled(void)
         NSUInteger style = [self styleMask];
 
         if (behavior & NSWindowCollectionBehaviorParticipatesInCycle &&
-            style & NSWindowStyleMaskResizable && !(style & NSWindowStyleMaskUtilityWindow) && !maximized &&
+            (style & (NSWindowStyleMaskResizable | NSWindowStyleMaskTitled)) &&
+            !(style & NSWindowStyleMaskUtilityWindow) && !maximized &&
             !(self.parentWindow || self.latentParentWindow))
         {
             behavior |= NSWindowCollectionBehaviorFullScreenPrimary;
